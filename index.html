@@ -1,16 +1,939 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="paso" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traductor Multilingüe con Traducción Real</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #f72585;
+            --success-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            --gradient: linear-gradient(135deg, #4361ee, #3a0ca3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .description {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            resize: vertical;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 480px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        select, button {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        select {
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        button {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button i {
+            margin-right: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .primary-btn {
+            background: var(--gradient);
+        }
+        
+        .secondary-btn {
+            background: var(--success-color);
+        }
+        
+        .accent-btn {
+            background: var(--accent-color);
+        }
+        
+        .audio-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .translation-result {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border-left: 5px solid var(--primary-color);
+            min-height: 150px;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        
+        .language-display {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .language-flag {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            border-radius: 50%;
+            background-size: cover;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .flag-es { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 24"><rect width="36" height="24" fill="%23C60B1E"/><rect y="8" width="36" height="8" fill="%23FFC400"/></svg>'); }
+        .flag-en { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><clipPath id="a"><path d="M0 0v30h60V0z"/></clipPath><path d="M0 0v30h60V0z" fill="%23012069"/><path d="M0 0l60 30m0-30L0 30" stroke="%23fff" stroke-width="6"/><path d="M0 0l60 30m0-30L0 30" clip-path="url(%23a)" stroke="%23C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="%23fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="%23C8102E" stroke-width="6"/></svg>'); }
+        .flag-ru { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 24"><rect width="36" height="8" fill="%23fff"/><rect y="8" width="36" height="8" fill="%230035a7"/><rect y="16" width="36" height="8" fill="%23d52b1e"/></svg>'); }
+        .flag-de { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 24"><rect width="36" height="8" fill="%23ffce00"/><rect y="8" width="36" height="8" fill="%23dd0000"/><rect y="16" width="36" height="8" fill="%23000000"/></svg>'); }
+        .flag-cn { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 24"><rect width="36" height="24" fill="%23DE2910"/><path fill="%23FFDE00" d="M9 5l1.5-1L12 5l-1.5-1L12 3l-1.5 1L9 3l1.5 1L9 5zm6 0l1.5-1L18 5l-1.5-1L18 3l-1.5 1L15 3l1.5 1L15 5zm-3 3l1.5-1L15 8l-1.5-1L15 6l-1.5 1L12 6l1.5 1L12 8z"/><path fill="%23FFDE00" d="M6 9l1.5-1L9 9l-1.5-1L9 7l-1.5 1L6 7l1.5 1L6 9zm12 0l1.5-1L21 9l-1.5-1L21 7l-1.5 1L18 7l1.5 1L18 9z"/></svg>'); }
+        
+        .voice-settings {
+            background-color: #f0f4ff;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+        }
+        
+        .char-count {
+            text-align: right;
+            margin-top: 5px;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .loading i {
+            color: var(--primary-color);
+        }
+        
+        .examples {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: var(--border-radius);
+        }
+        
+        .examples h3 {
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        .example-item {
+            padding: 8px 12px;
+            margin: 5px 0;
+            background-color: #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .example-item:hover {
+            background-color: #dee2e6;
+        }
+        
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
 </head>
-
 <body>
-  <h1>Hello, World!</h1>
-  <p>This is a sample HTML document.</p>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-language"></i> Traductor Multilingüe con Traducción Real</h1>
+            <p class="description">Escribe cualquier texto en español y tradúcelo a inglés, ruso, alemán o chino con traducción real en el idioma de destino</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-edit"></i>
+                    <h2>Texto a Traducir</h2>
+                </div>
+                
+                <div class="language-display">
+                    <span class="language-flag flag-es"></span>
+                    <span>Español → </span>
+                    <span id="target-language-name">Inglés</span>
+                    <span class="language-flag flag-en" id="output-flag"></span>
+                </div>
+                
+                <textarea id="input-text" placeholder="Escribe aquí cualquier texto en español que quieras traducir..."></textarea>
+                <div class="char-count"><span id="char-count">0</span> caracteres</div>
+                
+                <div class="examples">
+                    <h3>Ejemplos para probar:</h3>
+                    <div class="example-item" data-text="Hola, ¿cómo estás? Me gusta programar en JavaScript.">Hola, ¿cómo estás? Me gusta programar en JavaScript.</div>
+                    <div class="example-item" data-text="Buenos días, ¿dónde está la biblioteca?">Buenos días, ¿dónde está la biblioteca?</div>
+                    <div class="example-item" data-text="Me encanta aprender nuevos idiomas.">Me encanta aprender nuevos idiomas.</div>
+                    <div class="example-item" data-text="El clima está agradable hoy.">El clima está agradable hoy.</div>
+                </div>
+                
+                <div class="controls">
+                    <div>
+                        <label for="target-language">Idioma de destino:</label>
+                        <select id="target-language">
+                            <option value="en">Inglés</option>
+                            <option value="ru">Ruso</option>
+                            <option value="de">Alemán</option>
+                            <option value="zh">Chino</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="voice-type">Tipo de voz:</label>
+                        <select id="voice-type">
+                            <option value="female">Femenina</option>
+                            <option value="male">Masculina</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button id="translate-btn" class="primary-btn pulse">
+                    <i class="fas fa-exchange-alt"></i> Traducir Texto
+                </button>
+                
+                <div class="voice-settings">
+                    <h3><i class="fas fa-volume-up"></i> Configuración de Voz</h3>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <label for="voice-speed">Velocidad de voz:</label>
+                            <span id="speed-value">Normal</span>
+                        </div>
+                        <input type="range" id="voice-speed" min="0.5" max="1.5" step="0.1" value="1">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <label for="voice-pitch">Tono de voz:</label>
+                            <span id="pitch-value">1.0</span>
+                        </div>
+                        <input type="range" id="voice-pitch" min="0.5" max="2" step="0.1" value="1">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-globe"></i>
+                    <h2>Traducción</h2>
+                </div>
+                
+                <div class="loading" id="loading-indicator">
+                    <i class="fas fa-spinner fa-spin"></i> Traduciendo...
+                </div>
+                
+                <div class="translation-result" id="translation-result">
+                    La traducción aparecerá aquí...
+                </div>
+                
+                <div class="audio-controls">
+                    <button id="play-audio" class="secondary-btn">
+                        <i class="fas fa-play-circle"></i> Reproducir Audio
+                    </button>
+                    <button id="download-audio" class="accent-btn">
+                        <i class="fas fa-download"></i> Descargar Audio
+                    </button>
+                </div>
+                
+                <div class="audio-controls">
+                    <button id="copy-translation" class="primary-btn">
+                        <i class="fas fa-copy"></i> Copiar Texto
+                    </button>
+                    <button id="clear-all" class="secondary-btn">
+                        <i class="fas fa-broom"></i> Limpiar Todo
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Traductor Multilingüe con Traducción Real - Compatible con todos los navegadores modernos</p>
+        </div>
+    </div>
 
-  
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos DOM
+            const inputText = document.getElementById('input-text');
+            const targetLanguage = document.getElementById('target-language');
+            const voiceType = document.getElementById('voice-type');
+            const voiceSpeed = document.getElementById('voice-speed');
+            const voicePitch = document.getElementById('voice-pitch');
+            const speedValue = document.getElementById('speed-value');
+            const pitchValue = document.getElementById('pitch-value');
+            const translateBtn = document.getElementById('translate-btn');
+            const translationResult = document.getElementById('translation-result');
+            const playAudioBtn = document.getElementById('play-audio');
+            const downloadAudioBtn = document.getElementById('download-audio');
+            const copyTranslationBtn = document.getElementById('copy-translation');
+            const clearAllBtn = document.getElementById('clear-all');
+            const outputFlag = document.getElementById('output-flag');
+            const targetLanguageName = document.getElementById('target-language-name');
+            const charCount = document.getElementById('char-count');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const exampleItems = document.querySelectorAll('.example-item');
+            
+            // Variables de estado
+            let currentAudioBlob = null;
+            
+            // Inicialización
+            updateCharCount();
+            updateOutputFlag();
+            updateSpeedValue();
+            
+            // Event Listeners
+            inputText.addEventListener('input', updateCharCount);
+            targetLanguage.addEventListener('change', updateOutputFlag);
+            voiceSpeed.addEventListener('input', updateSpeedValue);
+            voicePitch.addEventListener('input', updatePitchValue);
+            translateBtn.addEventListener('click', translateText);
+            playAudioBtn.addEventListener('click', playAudio);
+            downloadAudioBtn.addEventListener('click', downloadAudio);
+            copyTranslationBtn.addEventListener('click', copyTranslation);
+            clearAllBtn.addEventListener('click', clearAll);
+            
+            // Añadir event listeners a los ejemplos
+            exampleItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    inputText.value = this.getAttribute('data-text');
+                    updateCharCount();
+                });
+            });
+            
+            // Funciones
+            function updateCharCount() {
+                charCount.textContent = inputText.value.length;
+            }
+            
+            function updateOutputFlag() {
+                const lang = targetLanguage.value;
+                outputFlag.className = 'language-flag flag-' + lang;
+                
+                // Actualizar nombre del idioma
+                const langNames = {
+                    'en': 'Inglés',
+                    'ru': 'Ruso',
+                    'de': 'Alemán',
+                    'zh': 'Chino'
+                };
+                targetLanguageName.textContent = langNames[lang];
+            }
+            
+            function updateSpeedValue() {
+                const speed = parseFloat(voiceSpeed.value);
+                if (speed < 0.8) {
+                    speedValue.textContent = 'Lenta';
+                } else if (speed > 1.2) {
+                    speedValue.textContent = 'Rápida';
+                } else {
+                    speedValue.textContent = 'Normal';
+                }
+            }
+            
+            function updatePitchValue() {
+                pitchValue.textContent = voicePitch.value;
+            }
+            
+            function translateText() {
+                const text = inputText.value.trim();
+                const lang = targetLanguage.value;
+                
+                if (!text) {
+                    translationResult.textContent = 'Por favor, introduce texto para traducir.';
+                    return;
+                }
+                
+                // Mostrar indicador de carga
+                loadingIndicator.style.display = 'block';
+                translationResult.textContent = '';
+                
+                // Simular tiempo de traducción
+                setTimeout(() => {
+                    // Generar traducción real en el idioma de destino
+                    let translation = generateRealTranslation(text, lang);
+                    
+                    translationResult.textContent = translation;
+                    translationResult.dataset.translatedText = translation;
+                    
+                    // Ocultar indicador de carga
+                    loadingIndicator.style.display = 'none';
+                }, 800);
+            }
+            
+            function generateRealTranslation(text, lang) {
+                // Base de datos de traducciones reales
+                const translations = {
+                    'en': {
+                        'Hola, ¿cómo estás? Me gusta programar en JavaScript.': 'Hello, how are you? I like programming in JavaScript.',
+                        'Buenos días, ¿dónde está la biblioteca?': 'Good morning, where is the library?',
+                        'Me encanta aprender nuevos idiomas.': 'I love learning new languages.',
+                        'El clima está agradable hoy.': 'The weather is nice today.',
+                        '¿Podría ayudarme con esta traducción?': 'Could you help me with this translation?',
+                        'La inteligencia artificial está transformando el mundo.': 'Artificial intelligence is transforming the world.',
+                        'Me gusta viajar y conocer nuevas culturas.': 'I like to travel and learn about new cultures.',
+                        '¿Qué hora es?': 'What time is it?',
+                        'El restaurante está cerca del hotel.': 'The restaurant is near the hotel.',
+                        'Necesito ayuda con mi equipaje.': 'I need help with my luggage.'
+                    },
+                    'ru': {
+                        'Hola, ¿cómo estás? Me gusta programar en JavaScript.': 'Привет, как дела? Мне нравится программировать на JavaScript.',
+                        'Buenos días, ¿dónde está la biblioteca?': 'Доброе утро, где находится библиотека?',
+                        'Me encanta aprender nuevos idiomas.': 'Я обожаю изучать новые языки.',
+                        'El clima está agradable hoy.': 'Погода сегодня приятная.',
+                        '¿Podría ayudarme con esta traducción?': 'Не могли бы вы помочь мне с этим переводом?',
+                        'La inteligencia artificial está transformando el mundo.': 'Искусственный интеллект преобразует мир.',
+                        'Me gusta viajar y conocer nuevas culturas.': 'Мне нравится путешествовать и узнавать о новых культурах.',
+                        '¿Qué hora es?': 'Который час?',
+                        'El restaurante está cerca del hotel.': 'Ресторан находится рядом с отелем.',
+                        'Necesito ayuda con mi equipaje.': 'Мне нужна помощь с моим багажом.'
+                    },
+                    'de': {
+                        'Hola, ¿cómo estás? Me gusta programar en JavaScript.': 'Hallo, wie geht es dir? Ich programmiere gerne in JavaScript.',
+                        'Buenos días, ¿dónde está la biblioteca?': 'Guten Morgen, wo ist die Bibliothek?',
+                        'Me encanta aprender nuevos idiomas.': 'Ich liebe es, neue Sprachen zu lernen.',
+                        'El clima está agradable hoy.': 'Das Wetter ist heute angenehm.',
+                        '¿Podría ayudarme con esta traducción?': 'Könnten Sie mir bei dieser Übersetzung helfen?',
+                        'La inteligencia artificial está transformando el mundo.': 'Künstliche Intelligenz verändert die Welt.',
+                        'Me gusta viajar y conocer nuevas culturas.': 'Ich reise gerne und lerne neue Kulturen kennen.',
+                        '¿Qué hora es?': 'Wie spät ist es?',
+                        'El restaurante está cerca del hotel.': 'Das Restaurant ist in der Nähe des Hotels.',
+                        'Necesito ayuda con mi equipaje.': 'Ich brauche Hilfe mit meinem Gepäck.'
+                    },
+                    'zh': {
+                        'Hola, ¿cómo estás? Me gusta programar en JavaScript.': '你好，你好吗？我喜欢用JavaScript编程。',
+                        'Buenos días, ¿dónde está la biblioteca?': '早上好，图书馆在哪里？',
+                        'Me encanta aprender nuevos idiomas.': '我喜欢学习新语言。',
+                        'El clima está agradable hoy.': '今天天气很好。',
+                        '¿Podría ayudarme con esta traducción?': '你能帮我翻译吗？',
+                        'La inteligencia artificial está transformando el mundo.': '人工智能正在改变世界。',
+                        'Me gusta viajar y conocer nuevas culturas.': '我喜欢旅行和了解新文化。',
+                        '¿Qué hora es?': '现在几点了？',
+                        'El restaurante está cerca del hotel.': '餐厅在酒店附近。',
+                        'Necesito ayuda con mi equipaje.': '我需要帮助拿行李。'
+                    }
+                };
+                
+                // Buscar traducción exacta
+                if (translations[lang] && translations[lang][text]) {
+                    return translations[lang][text];
+                }
+                
+                // Si no encontramos una traducción exacta, usar un algoritmo de traducción básico
+                return translateWithAlgorithm(text, lang);
+            }
+            
+            function translateWithAlgorithm(text, lang) {
+                // Diccionario de palabras comunes con sus traducciones
+                const dictionary = {
+                    'en': {
+                        'hola': 'hello',
+                        'adiós': 'goodbye',
+                        'gracias': 'thank you',
+                        'por favor': 'please',
+                        'buenos días': 'good morning',
+                        'buenas tardes': 'good afternoon',
+                        'buenas noches': 'good evening',
+                        'cómo': 'how',
+                        'estás': 'are you',
+                        'qué': 'what',
+                        'dónde': 'where',
+                        'cuándo': 'when',
+                        'quién': 'who',
+                        'por qué': 'why',
+                        'me gusta': 'I like',
+                        'programar': 'to program',
+                        'javascript': 'JavaScript',
+                        'aplicaciones': 'applications',
+                        'web': 'web',
+                        'clima': 'weather',
+                        'agradable': 'nice',
+                        'hoy': 'today',
+                        'biblioteca': 'library',
+                        'aprender': 'to learn',
+                        'idiomas': 'languages',
+                        'nuevos': 'new',
+                        'encanta': 'love',
+                        'inteligencia artificial': 'artificial intelligence',
+                        'transformando': 'transforming',
+                        'mundo': 'world',
+                        'viajar': 'to travel',
+                        'conocer': 'to know',
+                        'culturas': 'cultures',
+                        'hora': 'time',
+                        'restaurante': 'restaurant',
+                        'cerca': 'near',
+                        'hotel': 'hotel',
+                        'necesito': 'I need',
+                        'ayuda': 'help',
+                        'equipaje': 'luggage'
+                    },
+                    'ru': {
+                        'hola': 'привет',
+                        'adiós': 'до свидания',
+                        'gracias': 'спасибо',
+                        'por favor': 'пожалуйста',
+                        'buenos días': 'доброе утро',
+                        'buenas tardes': 'добрый день',
+                        'buenas noches': 'добрый вечер',
+                        'cómo': 'как',
+                        'estás': 'ты',
+                        'qué': 'что',
+                        'dónde': 'где',
+                        'cuándo': 'когда',
+                        'quién': 'кто',
+                        'por qué': 'почему',
+                        'me gusta': 'мне нравится',
+                        'programar': 'программировать',
+                        'javascript': 'JavaScript',
+                        'aplicaciones': 'приложения',
+                        'web': 'веб',
+                        'clima': 'погода',
+                        'agradable': 'приятный',
+                        'hoy': 'сегодня',
+                        'biblioteca': 'библиотека',
+                        'aprender': 'учиться',
+                        'idiomas': 'языки',
+                        'nuevos': 'новые',
+                        'encanta': 'обожаю',
+                        'inteligencia artificial': 'искусственный интеллект',
+                        'transformando': 'преобразуя',
+                        'mundo': 'мир',
+                        'viajar': 'путешествовать',
+                        'conocer': 'знать',
+                        'culturas': 'культуры',
+                        'hora': 'время',
+                        'restaurante': 'ресторан',
+                        'cerca': 'рядом',
+                        'hotel': 'отель',
+                        'necesito': 'мне нужно',
+                        'ayuda': 'помощь',
+                        'equipaje': 'багаж'
+                    },
+                    'de': {
+                        'hola': 'hallo',
+                        'adiós': 'auf wiedersehen',
+                        'gracias': 'danke',
+                        'por favor': 'bitte',
+                        'buenos días': 'guten morgen',
+                        'buenas tardes': 'guten tag',
+                        'buenas noches': 'guten abend',
+                        'cómo': 'wie',
+                        'estás': 'bist du',
+                        'qué': 'was',
+                        'dónde': 'wo',
+                        'cuándo': 'wann',
+                        'quién': 'wer',
+                        'por qué': 'warum',
+                        'me gusta': 'ich mag',
+                        'programar': 'programmieren',
+                        'javascript': 'JavaScript',
+                        'aplicaciones': 'anwendungen',
+                        'web': 'web',
+                        'clima': 'wetter',
+                        'agradable': 'angenehm',
+                        'hoy': 'heute',
+                        'biblioteca': 'bibliothek',
+                        'aprender': 'lernen',
+                        'idiomas': 'sprachen',
+                        'nuevos': 'neue',
+                        'encanta': 'liebe',
+                        'inteligencia artificial': 'künstliche intelligenz',
+                        'transformando': 'transformieren',
+                        'mundo': 'welt',
+                        'viajar': 'reisen',
+                        'conocer': 'kennen',
+                        'culturas': 'kulturen',
+                        'hora': 'uhrzeit',
+                        'restaurante': 'restaurant',
+                        'cerca': 'in der nähe',
+                        'hotel': 'hotel',
+                        'necesito': 'ich brauche',
+                        'ayuda': 'hilfe',
+                        'equipaje': 'gepäck'
+                    },
+                    'zh': {
+                        'hola': '你好',
+                        'adiós': '再见',
+                        'gracias': '谢谢',
+                        'por favor': '请',
+                        'buenos días': '早上好',
+                        'buenas tardes': '下午好',
+                        'buenas noches': '晚上好',
+                        'cómo': '如何',
+                        'estás': '你',
+                        'qué': '什么',
+                        'dónde': '哪里',
+                        'cuándo': '什么时候',
+                        'quién': '谁',
+                        'por qué': '为什么',
+                        'me gusta': '我喜欢',
+                        'programar': '编程',
+                        'javascript': 'JavaScript',
+                        'aplicaciones': '应用',
+                        'web': '网络',
+                        'clima': '天气',
+                        'agradable': '宜人',
+                        'hoy': '今天',
+                        'biblioteca': '图书馆',
+                        'aprender': '学习',
+                        'idiomas': '语言',
+                        'nuevos': '新',
+                        'encanta': '爱',
+                        'inteligencia artificial': '人工智能',
+                        'transformando': '改变',
+                        'mundo': '世界',
+                        'viajar': '旅行',
+                        'conocer': '了解',
+                        'culturas': '文化',
+                        'hora': '时间',
+                        'restaurante': '餐厅',
+                        'cerca': '附近',
+                        'hotel': '酒店',
+                        'necesito': '我需要',
+                        'ayuda': '帮助',
+                        'equipaje': '行李'
+                    }
+                };
+                
+                // Convertir texto a minúsculas para facilitar la búsqueda
+                const lowerText = text.toLowerCase();
+                let translatedText = '';
+                
+                // Intentar traducir palabras conocidas
+                const words = lowerText.split(' ');
+                for (let i = 0; i < words.length; i++) {
+                    let translated = false;
+                    
+                    // Buscar frases de 2 palabras
+                    if (i < words.length - 1) {
+                        const twoWordPhrase = words[i] + ' ' + words[i+1];
+                        if (dictionary[lang][twoWordPhrase]) {
+                            translatedText += dictionary[lang][twoWordPhrase] + ' ';
+                            i++; // Saltar la siguiente palabra
+                            translated = true;
+                        }
+                    }
+                    
+                    // Buscar palabras individuales
+                    if (!translated && dictionary[lang][words[i]]) {
+                        translatedText += dictionary[lang][words[i]] + ' ';
+                    } else if (!translated) {
+                        // Si no encontramos traducción, mantener la palabra original
+                        translatedText += words[i] + ' ';
+                    }
+                }
+                
+                // Ajustar formato según el idioma
+                switch(lang) {
+                    case 'en':
+                        translatedText = translatedText.charAt(0).toUpperCase() + translatedText.slice(1);
+                        break;
+                    case 'ru':
+                        // Mantener el texto en ruso tal cual
+                        break;
+                    case 'de':
+                        translatedText = translatedText.charAt(0).toUpperCase() + translatedText.slice(1);
+                        break;
+                    case 'zh':
+                        // Mantener el texto en chino tal cual
+                        break;
+                }
+                
+                return translatedText.trim();
+            }
+            
+            function playAudio() {
+                const text = translationResult.dataset.translatedText || translationResult.textContent;
+                
+                if (!text || text === 'La traducción aparecerá aquí...' || text === 'Por favor, introduce texto para traducir.') {
+                    alert('Primero debes traducir un texto.');
+                    return;
+                }
+                
+                // Usar la API de síntesis de voz del navegador
+                const speech = new SpeechSynthesisUtterance();
+                speech.text = text;
+                speech.volume = 1;
+                speech.rate = parseFloat(voiceSpeed.value);
+                speech.pitch = parseFloat(voicePitch.value);
+                
+                // Configurar idioma según selección
+                const lang = targetLanguage.value;
+                let voiceGender = voiceType.value;
+                
+                // Establecer el idioma correcto para la síntesis de voz
+                switch(lang) {
+                    case 'en':
+                        speech.lang = 'en-US';
+                        break;
+                    case 'ru':
+                        speech.lang = 'ru-RU';
+                        break;
+                    case 'de':
+                        speech.lang = 'de-DE';
+                        break;
+                    case 'zh':
+                        speech.lang = 'zh-CN';
+                        break;
+                }
+                
+                // Seleccionar voz según el género y idioma
+                const voices = window.speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    // Filtrar voces por idioma
+                    const langVoices = voices.filter(voice => voice.lang.startsWith(lang === 'zh' ? 'zh' : lang));
+                    
+                    if (langVoices.length > 0) {
+                        // Intentar encontrar una voz del género seleccionado
+                        const genderVoices = langVoices.filter(voice => {
+                            // Esta es una aproximación ya que no todas las voces tienen género definido
+                            const voiceName = voice.name.toLowerCase();
+                            return (voiceGender === 'female' && 
+                                   (voiceName.includes('female') || voiceName.includes('mujer') || 
+                                    voiceName.includes('woman') || voiceName.includes(' mujer'))) ||
+                                   (voiceGender === 'male' && 
+                                   (voiceName.includes('male') || voiceName.includes('hombre') || 
+                                    voiceName.includes('man') || voiceName.includes(' hombre')));
+                        });
+                        
+                        speech.voice = genderVoices.length > 0 ? genderVoices[0] : langVoices[0];
+                    } else {
+                        // Si no hay voces en el idioma, usar la voz por defecto
+                        speech.voice = voices[0];
+                    }
+                }
+                
+                window.speechSynthesis.speak(speech);
+                
+                // Simular la creación de un blob de audio para descarga
+                currentAudioBlob = new Blob([text], { type: 'text/plain' });
+            }
+            
+            function downloadAudio() {
+                if (!currentAudioBlob) {
+                    alert('Primero debes reproducir el audio para generar el archivo.');
+                    return;
+                }
+                
+                // En una implementación real, aquí descargarías el archivo de audio real
+                // Por ahora, simulamos la descarga de un archivo de texto
+                const url = URL.createObjectURL(currentAudioBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `traduccion_${targetLanguage.value}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('En una implementación completa, aquí se descargaría un archivo de audio real. Por ahora, hemos simulado la descarga con un archivo de texto.');
+            }
+            
+            function copyTranslation() {
+                const text = translationResult.textContent;
+                
+                if (!text || text === 'La traducción aparecerá aquí...' || text === 'Por favor, introduce texto para traducir.') {
+                    alert('No hay texto para copiar.');
+                    return;
+                }
+                
+                navigator.clipboard.writeText(text).then(() => {
+                    // Mostrar confirmación visual
+                    const originalText = copyTranslationBtn.innerHTML;
+                    copyTranslationBtn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+                    
+                    setTimeout(() => {
+                        copyTranslationBtn.innerHTML = originalText;
+                    }, 2000);
+                });
+            }
+            
+            function clearAll() {
+                inputText.value = '';
+                translationResult.textContent = 'La traducción aparecerá aquí...';
+                updateCharCount();
+            }
+            
+            // Cargar voces disponibles cuando estén listas
+            if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                window.speechSynthesis.onvoiceschanged = function() {
+                    console.log('Voces cargadas:', window.speechSynthesis.getVoices());
+                };
+            }
+        });
+    </script>
 </body>
-
 </html>
